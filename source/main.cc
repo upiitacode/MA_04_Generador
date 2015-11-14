@@ -2,7 +2,8 @@
 #include "SerialStream_stm32f3.h"
 #include "dac_stm32f3.h"
 #include "ctimers_stmf3.h"
-#include <cmath>
+#include "sine_table.h"
+#include "stm32f30x.h"
 
 void tarea1(void const * arguments); //tarea 1
 osThreadId  tarea1ID;	//identificador del hilo tarea 1
@@ -18,9 +19,9 @@ void tarea2Init(void);//funcion que iniciliza la tarea1
 int main(){
 	// hardware init
 	dac_init();
-	timer2_init(200, 1);
+	timer2_init(9,1);
 	SerialUSART2 serial(9600);
-	serial.printf("\nEl dinero es dinero ara ara\n");
+	serial.printf("\nProccesor Speed %d\n", SystemCoreClock);
 
 	// Kernel init
 	osKernelInitialize();
@@ -45,23 +46,19 @@ void tarea2Init(void){
 
 void tarea1(void const * arguments){
 	while(1){
-		osDelay(10);
+		osDelay(1000);
 	}
 }
 
 void tarea2(void const * arguments){
 	while(1){
-		osDelay(10);
+		osDelay(1000);
 	}
 }
 
 void timer2_callback(void){
-	static float time = 0;
-	if (time  > (3.1416*2)){
-		time = 0.0;
-	}
-	float volt = (sin(time)+1)*(3.3/2);
+	static unsigned int  accu = 0;
+	float volt = sine_table[(accu&0xFF)]*(3.3/4095.0);
 	dac_write(volt);
-	time += 0.01;
-	osDelay(1);
+	accu++;
 }
