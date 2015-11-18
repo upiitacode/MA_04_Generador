@@ -21,7 +21,7 @@ int main(){
 	dac_init();
 	timer2_init(9,1);
 	SerialUSART2 serial(9600);
-	serial.printf("\nProccesor Speed %d\n", SystemCoreClock);
+	serial.printf("\nProccesor Speed %d\n",(int) SystemCoreClock);
 
 	// Kernel init
 	osKernelInitialize();
